@@ -3,6 +3,8 @@ package com.guido.guzman.msv.items.controllers;
 import com.guido.guzman.msv.items.models.Item;
 import com.guido.guzman.msv.items.models.ProductDTO;
 import com.guido.guzman.msv.items.services.IItemService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 public class ItemController {
@@ -48,5 +51,50 @@ public class ItemController {
             return ResponseEntity.ok(item.get());
         }
         return ResponseEntity.status(404).body(Collections.singletonMap("message", "Product not found on products microservice"));
+    }
+
+    @CircuitBreaker(name = "items", fallbackMethod = "getFallBackMethod")
+    @GetMapping("/details/{id}")
+    public ResponseEntity<?> detail2(@PathVariable Long id) {
+        Optional<Item> item =  itemService.findById(id);
+        if (item.isPresent()) {
+            return ResponseEntity.ok(item.get());
+        }
+        return ResponseEntity.status(404).body(Collections.singletonMap("message", "Product not found on products microservice"));
+    }
+
+    @CircuitBreaker(name = "items", fallbackMethod = "getFallBackMethod2")
+    @TimeLimiter(name = "items")
+    @GetMapping("/details2/{id}")
+    public CompletableFuture<?> detail3(@PathVariable Long id) {
+        return CompletableFuture.supplyAsync(() -> {
+            Optional<Item> item =  itemService.findById(id);
+            if (item.isPresent()) {
+                return ResponseEntity.ok(item.get());
+            }
+            return ResponseEntity.status(404).body(Collections.singletonMap("message", "Product not found on products microservice"));
+        });
+    }
+
+    public ResponseEntity<?> getFallBackMethod(Throwable error) {
+        logger.error(error.getMessage());
+
+        ProductDTO product = new ProductDTO();
+        product.setId(1L);
+        product.setName("Product not found on products microservice");
+        product.setPrice(0.0);
+        return ResponseEntity.ok(new Item(product, 0));
+    }
+
+    public CompletableFuture<?> getFallBackMethod2(Throwable error) {
+        return CompletableFuture.supplyAsync(() -> {
+            logger.error(error.getMessage());
+
+            ProductDTO product = new ProductDTO();
+            product.setId(1L);
+            product.setName("Product not found on products microservice");
+            product.setPrice(0.0);
+            return ResponseEntity.ok(new Item(product, 0));
+        });
     }
 }
