@@ -7,25 +7,47 @@ import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+@RefreshScope
 @RestController
 public class ItemController {
     private final IItemService itemService;
     private final CircuitBreakerFactory cBreakerFactory;
     private final Logger logger = LoggerFactory.getLogger(ItemController.class);
+    @Value("${configuracion.texto}")
+    private String text;
+    @Autowired
+    private Environment env;
 
     public ItemController(@Qualifier("itemServiceWebClient") IItemService itemService, CircuitBreakerFactory cBreakerFactory) {
         this.itemService = itemService;
         this.cBreakerFactory = cBreakerFactory;
+    }
+
+    @GetMapping("/fetch-configs")
+    public ResponseEntity<?> fetchConfigs(@Value("${server.port}") String port) {
+        Map<String, String> json = new HashMap<>();
+        json.put("text", text);
+        json.put("port", port);
+        logger.info(port);
+        logger.info(text);
+
+        if (env.getActiveProfiles().length > 0 && env.getActiveProfiles()[0].equals("dev")) {
+            json.put("autor.nombre", env.getProperty("configuracion.autor.nombre"));
+            json.put("autor.email", env.getProperty("configuracion.autor.email"));
+        }
+        return ResponseEntity.ok(json);
     }
 
     @GetMapping
