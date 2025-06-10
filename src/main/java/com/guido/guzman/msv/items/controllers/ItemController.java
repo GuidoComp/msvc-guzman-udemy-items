@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.circuitbreaker.CircuitBreakerFactory;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -118,5 +119,29 @@ public class ItemController {
             product.setPrice(0.0);
             return ResponseEntity.ok(new Item(product, 0));
         });
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED) //opcional
+    public ProductDTO create(@RequestBody ProductDTO productDTO) {
+        return itemService.save(productDTO);
+    }
+
+    @PutMapping("/{id}")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
+        ProductDTO updatedProduct = itemService.update(productDTO, id);
+        return ResponseEntity.status(HttpStatus.CREATED).body(updatedProduct);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        Optional<Item> item = itemService.findById(id);
+        if (item.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        itemService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

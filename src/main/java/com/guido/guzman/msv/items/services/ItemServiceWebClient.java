@@ -50,4 +50,42 @@ public class ItemServiceWebClient implements IItemService {
 //            return Optional.empty();
 //        }
     }
+
+    @Override
+    public ProductDTO save(ProductDTO productDTO) {
+        return client.build()
+                .post()
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(productDTO)
+                .retrieve()
+                .bodyToMono(ProductDTO.class)
+                .block();
+    }
+
+    @Override
+    public ProductDTO update(ProductDTO productDTO, Long id) {
+        Map<String, Long> params = new HashMap<>();
+        params.put("id", id);
+        return client.build()
+                .put()
+                .uri("/{id}", params)
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(productDTO)
+                .retrieve()
+                .bodyToMono(ProductDTO.class)
+                .block();
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        Map<String, Long> params = new HashMap<>();
+        params.put("id", id);
+        client.build()
+                .delete()
+                .uri("/{id}", params)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+    }
 }
