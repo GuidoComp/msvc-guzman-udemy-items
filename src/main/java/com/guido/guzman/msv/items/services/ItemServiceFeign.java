@@ -1,8 +1,8 @@
 package com.guido.guzman.msv.items.services;
 
+import com.guidio.guzman.libs.msv.commons.entities.Product;
 import com.guido.guzman.msv.items.clients.IProductFeignClient;
 import com.guido.guzman.msv.items.models.Item;
-import com.guido.guzman.msv.items.models.ProductDTO;
 import feign.FeignException;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +30,7 @@ public class ItemServiceFeign implements IItemService {
     @Override
     public Optional<Item> findById(Long id) {
         try {
-            ProductDTO product = client.detail(id);
+            Product product = client.detail(id);
             return Optional.of(new Item(product, new Random().nextInt(1, 10)));
         } catch (FeignException e) {
             return Optional.empty();
@@ -38,12 +38,12 @@ public class ItemServiceFeign implements IItemService {
     }
 
     @Override
-    public ProductDTO save(ProductDTO productDTO) {
+    public Product save(Product productDTO) {
         return client.save(productDTO);
     }
 
     @Override
-    public ProductDTO update(ProductDTO productDTO, Long id) {
+    public Product update(Product productDTO, Long id) {
         return client.update(productDTO, id);
     }
 

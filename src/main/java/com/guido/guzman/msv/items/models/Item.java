@@ -1,5 +1,6 @@
 package com.guido.guzman.msv.items.models;
 
+import com.guidio.guzman.libs.msv.commons.entities.Product;
 import lombok.*;
 
 /*@AllArgsConstructor
@@ -7,7 +8,7 @@ import lombok.*;
 @Getter
 @Setter*/
 public class Item {
-    private ProductDTO product;
+    private Product product;
     private int quantity;
 
     /*public Item(ProductDTO product, int quantity) {
@@ -18,7 +19,7 @@ public class Item {
     public Item() {
     }
 
-    public Item(ProductDTO product, int quantity) {
+    public Item(Product product, int quantity) {
         this.product = product;
         this.quantity = quantity;
     }
@@ -27,11 +28,11 @@ public class Item {
         return product.getPrice() * quantity;
     }
 
-    public ProductDTO getProduct() {
+    public Product getProduct() {
         return product;
     }
 
-    public void setProduct(ProductDTO product) {
+    public void setProduct(Product product) {
         this.product = product;
     }
 

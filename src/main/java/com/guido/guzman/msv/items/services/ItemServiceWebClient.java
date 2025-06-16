@@ -1,12 +1,10 @@
 package com.guido.guzman.msv.items.services;
 
+import com.guidio.guzman.libs.msv.commons.entities.Product;
 import com.guido.guzman.msv.items.models.Item;
-import com.guido.guzman.msv.items.models.ProductDTO;
-import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientException;
 
 import java.util.*;
 
@@ -25,7 +23,7 @@ public class ItemServiceWebClient implements IItemService {
                 .get()
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .bodyToFlux(ProductDTO.class)
+                .bodyToFlux(Product.class)
                 .map(product -> new Item(product, new Random().nextInt(1, 10)))
                 .collectList()
                 .block();
@@ -42,7 +40,7 @@ public class ItemServiceWebClient implements IItemService {
                             .uri("/{id}", params)
                             .accept(MediaType.APPLICATION_JSON)
                             .retrieve()
-                            .bodyToMono(ProductDTO.class)
+                            .bodyToMono(Product.class)
                             .map(product -> new Item(product, new Random().nextInt(1, 10)))
                             .block()
             );
@@ -52,18 +50,18 @@ public class ItemServiceWebClient implements IItemService {
     }
 
     @Override
-    public ProductDTO save(ProductDTO productDTO) {
+    public Product save(Product productDTO) {
         return client.build()
                 .post()
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(productDTO)
                 .retrieve()
-                .bodyToMono(ProductDTO.class)
+                .bodyToMono(Product.class)
                 .block();
     }
 
     @Override
-    public ProductDTO update(ProductDTO productDTO, Long id) {
+    public Product update(Product productDTO, Long id) {
         Map<String, Long> params = new HashMap<>();
         params.put("id", id);
         return client.build()
@@ -73,7 +71,7 @@ public class ItemServiceWebClient implements IItemService {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(productDTO)
                 .retrieve()
-                .bodyToMono(ProductDTO.class)
+                .bodyToMono(Product.class)
                 .block();
     }
 

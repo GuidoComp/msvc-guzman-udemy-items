@@ -1,6 +1,6 @@
 package com.guido.guzman.msv.items.clients;
 
-import com.guido.guzman.msv.items.models.ProductDTO;
+import com.guidio.guzman.libs.msv.commons.entities.Product;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,13 +9,13 @@ import java.util.List;
 @FeignClient(name = "products")
 public interface IProductFeignClient {
     @GetMapping
-    List<ProductDTO> findAll();
+    List<Product> findAll();
     @GetMapping("/{id}")
-    ProductDTO detail(@PathVariable Long id);
+    Product detail(@PathVariable Long id);
     @PostMapping
-    ProductDTO save(@RequestBody ProductDTO productDTO);
+    Product save(@RequestBody Product productDTO);
     @PutMapping("/{id}")
-    ProductDTO update(@RequestBody ProductDTO productDTO, @PathVariable Long id);
+    Product update(@RequestBody Product productDTO, @PathVariable Long id);
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id);
 }

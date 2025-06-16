@@ -1,7 +1,7 @@
 package com.guido.guzman.msv.items.controllers;
 
+import com.guidio.guzman.libs.msv.commons.entities.Product;
 import com.guido.guzman.msv.items.models.Item;
-import com.guido.guzman.msv.items.models.ProductDTO;
 import com.guido.guzman.msv.items.services.IItemService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
@@ -64,7 +64,7 @@ public class ItemController {
         Optional<Item> item = cBreakerFactory.create("items").run(() -> itemService.findById(id), error -> {
             logger.error(error.getMessage());
 
-            ProductDTO product = new ProductDTO();
+            Product product = new Product();
             product.setId(id);
             product.setName("Product not found on products microservice");
             product.setPrice(0.0);
@@ -102,7 +102,7 @@ public class ItemController {
     public ResponseEntity<?> getFallBackMethod(Throwable error) {
         logger.error(error.getMessage());
 
-        ProductDTO product = new ProductDTO();
+        Product product = new Product();
         product.setId(1L);
         product.setName("Product not found on products microservice");
         product.setPrice(0.0);
@@ -113,7 +113,7 @@ public class ItemController {
         return CompletableFuture.supplyAsync(() -> {
             logger.error(error.getMessage());
 
-            ProductDTO product = new ProductDTO();
+            Product product = new Product();
             product.setId(1L);
             product.setName("Product not found on products microservice");
             product.setPrice(0.0);
@@ -123,14 +123,14 @@ public class ItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED) //opcional
-    public ProductDTO create(@RequestBody ProductDTO productDTO) {
+    public Product create(@RequestBody Product productDTO) {
         return itemService.save(productDTO);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ProductDTO productDTO) {
-        ProductDTO updatedProduct = itemService.update(productDTO, id);
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Product productDTO) {
+        Product updatedProduct = itemService.update(productDTO, id);
         return ResponseEntity.status(HttpStatus.CREATED).body(updatedProduct);
     }
 
