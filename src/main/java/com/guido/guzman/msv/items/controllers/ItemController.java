@@ -54,8 +54,9 @@ public class ItemController {
     @GetMapping
     public List<Item> list(@RequestParam(name="name", required = false) String name,
                            @RequestHeader(name="token-request", required = false) String token) {
-        System.out.println("Name request: " + name);
-        System.out.println("Token request: " + token);
+        logger.info("Calling controller method ItemController::list()");
+        logger.info("Name request: {}", name);
+        logger.info("Token request: {}", token);
         return itemService.findAll();
     }
 
@@ -124,12 +125,14 @@ public class ItemController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED) //opcional
     public Product create(@RequestBody Product productDTO) {
+        logger.info("Creating Product: {}", productDTO);
         return itemService.save(productDTO);
     }
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> update(@PathVariable Long id, @RequestBody Product productDTO) {
+        logger.info("Updating Product: {}", productDTO);
         Product updatedProduct = itemService.update(productDTO, id);
         return ResponseEntity.status(HttpStatus.CREATED).body(updatedProduct);
     }
@@ -137,6 +140,7 @@ public class ItemController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ResponseEntity<?> delete(@PathVariable Long id) {
+        logger.info("Deleting Product with id: {}", id);
         Optional<Item> item = itemService.findById(id);
         if (item.isEmpty()) {
             return ResponseEntity.notFound().build();
