@@ -11,15 +11,15 @@ import java.util.*;
 //@Primary
 @Service
 public class ItemServiceWebClient implements IItemService {
-    private final WebClient.Builder client;
+    private final WebClient client;
 
-    public ItemServiceWebClient(WebClient.Builder client) {
+    public ItemServiceWebClient(WebClient client) {
         this.client = client;
     }
 
     @Override
     public List<Item> findAll() {
-        return this.client.build()
+        return this.client
                 .get()
                 .accept(MediaType.APPLICATION_JSON)
                 .retrieve()
@@ -35,7 +35,7 @@ public class ItemServiceWebClient implements IItemService {
         params.put("id", id);
 //        try {
             return Optional.of(
-                    client.build()
+                    client
                             .get()
                             .uri("/{id}", params)
                             .accept(MediaType.APPLICATION_JSON)
@@ -51,7 +51,7 @@ public class ItemServiceWebClient implements IItemService {
 
     @Override
     public Product save(Product productDTO) {
-        return client.build()
+        return client
                 .post()
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(productDTO)
@@ -64,7 +64,7 @@ public class ItemServiceWebClient implements IItemService {
     public Product update(Product productDTO, Long id) {
         Map<String, Long> params = new HashMap<>();
         params.put("id", id);
-        return client.build()
+        return client
                 .put()
                 .uri("/{id}", params)
                 .accept(MediaType.APPLICATION_JSON)
@@ -79,7 +79,7 @@ public class ItemServiceWebClient implements IItemService {
     public void deleteById(Long id) {
         Map<String, Long> params = new HashMap<>();
         params.put("id", id);
-        client.build()
+        client
                 .delete()
                 .uri("/{id}", params)
                 .retrieve()
